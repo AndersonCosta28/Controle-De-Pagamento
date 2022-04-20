@@ -1,4 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate } from "typeorm";
 
 
 @Entity()
@@ -14,4 +14,16 @@ export class Usuario {
 
     @Column()
     idade: number;
+
+    @BeforeInsert()
+    beforeinsert(){
+        this.nome = this.nome.toUpperCase().trim();
+        this.sobrenome = this.sobrenome.toUpperCase().trim();
+    }
+
+    @BeforeUpdate()
+    beforeupdate(){
+        this.nome = this.nome.toUpperCase().trim();
+        this.sobrenome = this.sobrenome.toUpperCase().trim();
+    }
 }
