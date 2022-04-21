@@ -1,10 +1,10 @@
 import { Request, Response } from 'express'
 import { Usuario } from './Usuario.entity';
-import { IService } from '../interface/service.interface';
+import { UsuarioService } from './Usuario.service';
 
 export class UsuarioController {
 
-    constructor(private usuarioService: IService<Usuario>) { }
+    constructor(private usuarioService: UsuarioService) { }
 
     async getAll(request: Request, response: Response): Promise<Response> {
         try {
