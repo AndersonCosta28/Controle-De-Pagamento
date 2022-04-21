@@ -1,50 +1,60 @@
-import express, { Request, Response } from 'express'
+import { Request, Response } from 'express'
 import { Usuario } from './Usuario.entity';
 import { IUsuarioService } from './Usuario.interface';
-import { UsuarioService } from './Usuario.service';
 
-const usuarioService: IUsuarioService = new UsuarioService()
-const RouterUsuario = express.Router();
+export class UsuarioController {
 
-RouterUsuario.get('/', (request: Request, response: Response) => {
-    usuarioService.findAll()
-        .then(result => response.send(result))
-        .catch(e => response.send(e))
-});
+    constructor(private usuarioService: IUsuarioService) { }
 
-RouterUsuario.get('/:id', (request: Request, response: Response) => {
-    const id = Number(request.params.id);
-    if (!id) return response.send('ID com caracter inválido');
+    async getAll(request: Request, response: Response): Promise<Response> {
+        try {
+            return response.status(201).send(await this.usuarioService.findAll())
+        } catch (error) {
+            console.log(error)
+            return response.status(400).json(error)
+        }
+    };
 
-    usuarioService.findOne(id)
-        .then(result => response.send(result))
-        .catch(e => response.send(e))
-});
+    async getById(request: Request, response: Response): Promise<Response> {
+        const id = Number(request.params.id);
+        if (!id) return response.send('ID com caracter inválido');
 
-RouterUsuario.post('/', (request: Request, response: Response) => {
-    const user = request.body as Usuario;
-    usuarioService.save(user)
-        .then(result => response.send(result))
-        .catch(e => response.send('Erro ao salvar salvar o usuário. \n ' + e))
-});
+        try {
+            return response.status(201).send(await this.usuarioService.findOne(id))
+        } catch (error) {
+            return response.status(400).json(error)
+        }
+    };
 
-RouterUsuario.delete('/:id', (request: Request, response: Response) => {
-    const id = Number(request.params.id);
-    if (!id) return response.send('ID inválido');
+    async Create(request: Request, response: Response): Promise<Response> {
+        const user = request.body as Usuario;
 
-    usuarioService.delete(id)
-        .then(result => response.send(result))
-        .catch(e => response.send(e))
-});
+        try {
+            return response.status(201).send(await this.usuarioService.save(user))
+        } catch (error) {
+            return response.status(400).json(error)
+        }
+    }
 
-RouterUsuario.put('/:id', (request: Request, response: Response) => {
-    const id = Number(request.params.id);
-    if (!id) return response.send('ID com caracter inválido');
+    async delete(request: Request, response: Response): Promise<Response> {
+        const id = Number(request.params.id);
+        
+        try {            
+            return response.status(204).send(await this.usuarioService.delete(id))
+        } catch (error) {
+            return response.status(400).json(error)
+        }
+    }
 
-    const user = request.body as Usuario;
-    usuarioService.update(id, user)
-        .then(result => response.send(result))
-        .catch(e => response.send(e))
-});
+    async update(request: Request, response: Response): Promise<Response> {
+        const id = Number(request.params.id);
+        const user = request.body
+        if (!id) return response.send('ID com caracter inválido');
 
-export default RouterUsuario
+        try {
+            return response.status(201).send(await this.usuarioService.update(id, user))
+        } catch (error) {
+            return response.status(400).json(error)
+        }
+    }
+}

@@ -1,13 +1,14 @@
-import { getRepository } from "typeorm";
+import { getRepository, Repository } from "typeorm";
 import { Usuario } from "./Usuario.entity";
-import {IUsuarioService} from "./Usuario.interface";
+import { IUsuarioService } from "./Usuario.interface";
 
 export class UsuarioService implements IUsuarioService {
+
     async findAll(): Promise<Usuario[]> {
-        return await getRepository(Usuario).find({order: {id:"ASC"}} );
+        return await getRepository(Usuario).find({ order: { id: "ASC" } });
     }
 
-    async findOne(id: number): Promise<Usuario | undefined> {
+    async findOne(id: number): Promise<Usuario> {
         try {
             const Repositorio = await getRepository(Usuario).findOne(id)
 
@@ -21,14 +22,14 @@ export class UsuarioService implements IUsuarioService {
 
     async save(user: Usuario): Promise<Usuario> {
         try {
-            return await getRepository(Usuario).save(user)
+            const model = await getRepository(Usuario).create(user);
+            return await getRepository(Usuario).save(model)
         } catch (error) {
             throw 'Erro save: ' + error
         }
     }
 
     async delete(id: number): Promise<Boolean> {
-
         try {
             await this.findOne(id)
 
@@ -43,7 +44,7 @@ export class UsuarioService implements IUsuarioService {
         }
     }
 
-    async update(id: number, user: Usuario): Promise<Usuario | undefined> {
+    async update(id: number, user: Usuario): Promise<Usuario> {
         try {
             await this.findOne(id)
 
