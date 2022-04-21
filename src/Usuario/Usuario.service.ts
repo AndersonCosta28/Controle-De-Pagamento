@@ -1,8 +1,8 @@
-import { getRepository, Repository } from "typeorm";
+import { getRepository } from "typeorm";
 import { Usuario } from "./Usuario.entity";
-import { IUsuarioService } from "./Usuario.interface";
+import { IService } from "../interface/service.interface";
 
-export class UsuarioService implements IUsuarioService {
+export class UsuarioService implements IService<Usuario> {
 
     async findAll(): Promise<Usuario[]> {
         return await getRepository(Usuario).find({ order: { id: "ASC" } });

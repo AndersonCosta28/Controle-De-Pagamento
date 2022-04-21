@@ -7,23 +7,18 @@ export class Usuario {
     id: number;
 
     @Column()
-    nome: string;
+    usuario: string;
 
     @Column()
-    sobrenome: string;
-
-    @Column()
-    idade: number;
+    senha: string;
 
     @BeforeInsert()
     beforeinsert(){
-        this.nome = this.nome.toUpperCase().trim();
-        this.sobrenome = this.sobrenome.toUpperCase().trim();
+        this.usuario = this.usuario.toUpperCase().trim();
     }
 
     @BeforeUpdate()
     beforeupdate(){
-        this.nome = this.nome.toUpperCase().trim();
-        this.sobrenome = this.sobrenome.toUpperCase().trim();
+        this.usuario = this.usuario.toUpperCase().trim();
     }
 }

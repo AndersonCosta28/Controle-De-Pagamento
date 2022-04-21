@@ -1,14 +1,15 @@
 import { Request, Response } from 'express'
-import { Usuario } from './Usuario.entity';
+import { Cargo } from './Cargo.entity';
 import { IService } from '../interface/service.interface';
+import { CargoService } from './Cargo.service';
 
-export class UsuarioController {
+export class CargoController {
 
-    constructor(private usuarioService: IService<Usuario>) { }
+    constructor(private cargoService: CargoService) { }
 
     async getAll(request: Request, response: Response): Promise<Response> {
         try {
-            return response.status(201).send(await this.usuarioService.findAll())
+            return response.status(201).send(await this.cargoService.findAll())
         } catch (error) {
             console.log(error)
             return response.status(400).json(error)
@@ -20,17 +21,17 @@ export class UsuarioController {
         if (!id) return response.send('ID com caracter inválido');
 
         try {
-            return response.status(201).send(await this.usuarioService.findOne(id))
+            return response.status(201).send(await this.cargoService.findOne(id))
         } catch (error) {
             return response.status(400).json(error)
         }
     };
 
     async Create(request: Request, response: Response): Promise<Response> {
-        const user = request.body as Usuario;
+        const user = request.body as Cargo;
 
         try {
-            return response.status(201).send(await this.usuarioService.save(user))
+            return response.status(201).send(await this.cargoService.save(user))
         } catch (error) {
             return response.status(400).json(error)
         }
@@ -40,7 +41,7 @@ export class UsuarioController {
         const id = Number(request.params.id);
         
         try {            
-            return response.status(204).send(await this.usuarioService.delete(id))
+            return response.status(204).send(await this.cargoService.delete(id))
         } catch (error) {
             return response.status(400).json(error)
         }
@@ -52,7 +53,7 @@ export class UsuarioController {
         if (!id) return response.send('ID com caracter inválido');
 
         try {
-            return response.status(201).send(await this.usuarioService.update(id, user))
+            return response.status(201).send(await this.cargoService.update(id, user))
         } catch (error) {
             return response.status(400).json(error)
         }
