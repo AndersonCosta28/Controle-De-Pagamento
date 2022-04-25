@@ -7,7 +7,7 @@ export class Contrato {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({unique: true})
+    @Column({ unique: true })
     nome: string;
 
     @Column()
@@ -16,11 +16,35 @@ export class Contrato {
     @Column()
     salario_base: number;
 
-    @Column({ default: 0, nullable: true })
+    @Column({ default: 0 })
     percentual_comissao_a_vista: number;
 
-    @Column({ default: 0, nullable: true })
+    @Column({ default: 0 })
     percentual_comissao_a_prazo: number;
+
+    @Column({ default: 0 })
+    vale_alimentacao: number;
+
+    @Column({ default: 0 })
+    percentual_vale_alimentacao: number;
+
+    @Column({ default: 0 })
+    vale_transporte: number;
+
+    @Column({ default: 0 })
+    percentual_vale_transporte: number;
+
+    @Column({ default: 0 })
+    plano_odontologico: number;
+
+    @Column({ default: 0 })
+    percentual_plano_odontologico: number;
+
+    @Column({ default: 0 })
+    plano_saude: number;
+
+    @Column({ default: 0 })
+    percentual_plano_saude: number;
 
     @OneToMany(() => Funcionario, (funcionario) => funcionario.contrato)
     funcionario: Funcionario;

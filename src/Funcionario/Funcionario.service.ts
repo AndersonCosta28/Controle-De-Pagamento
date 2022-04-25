@@ -4,8 +4,44 @@ import { IService } from "../interface/service.interface";
 import { ContratoService } from "../Contrato/Contrato.service";
 import { CargoService } from "../Cargo/Cargo.service";
 import { diasNoMes } from "../utils";
+import { Contrato } from "../Contrato/Contrato.entity";
+import { Cargo } from "../Cargo/Cargo.entity";
+import { Faixas_INSS, Faixas_IRRF } from "../interface/outros.type";
 
 export class FuncionarioService implements IService<Funcionario> {
+    funcionario: Funcionario;
+    private get cargo(): Cargo {
+        return this.funcionario.cargo;
+    }
+    private get contrato(): Contrato {
+        return this.funcionario.contrato;
+    }
+    private get salario_liquido(): number {
+        return this.retornarSalarioLiquido();
+    }
+    // private get salario_proporcional(): number {
+    //     return this.RetornarSalarioProporcional();
+    // }
+    private get salario_bruto(): number {
+        return this.retornarSalarioBruto();
+    }
+
+    private get IRRF(): number {
+        return this.retornarValorIRRF()
+    }
+
+    private get INSS(): number {
+        return this.retornarValorINSS();
+    }
+
+    private get Valor_de_beneficios_A_Deduzir_Do_Salario(): number {
+        return this.retornarValorDeBeneficiosParaDeduzirDoSalario();
+    }
+
+    private get comissao(): number {
+        return this.retornarComissao();
+    }
+
     constructor(private cargoService: CargoService, private contratoService: ContratoService) { }
 
     async findAll(): Promise<Funcionario[]> {
@@ -68,19 +104,89 @@ export class FuncionarioService implements IService<Funcionario> {
         body.contrato = await this.contratoService.findOne(Number(body.contrato));
         return body;
     }
-    async FazerPagamento(id: number): Promise<String> {
-        const funcionario: Funcionario = await this.findOne(Number(id));
-        const diasTrabalhados: number = 25;
-        const salario_base = funcionario.contrato.salario_base
-        const valor_reajuste = (funcionario.cargo.percentual_reajuste / 100) * salario_base;
-        const salario_reajustado = salario_base + valor_reajuste
+    // Será usado quando for implementar ponto eletronico
+    // private RetornarSalarioProporcional(): number {
+    //     const diasTrabalhados: number = 25; // Provavelmente irá se transformar em parâmetro da função        
+    //     const valor_diaria: number = this.salario_liquido / diasNoMes();
 
-        const VendasAPrazo: number = 0;
-        const VendasAVista: number = 0;
+    //     return Number((diasTrabalhados * valor_diaria + this.comissao).toFixed(2));
+    // }
+    
+    private retornarSalarioLiquido() {
+        return this.salario_bruto - this.INSS - this.IRRF - this.Valor_de_beneficios_A_Deduzir_Do_Salario;
+    }
 
-        const valor_diaria: number = salario_reajustado / diasNoMes();
-        const comissao = (VendasAPrazo * funcionario.contrato.percentual_comissao_a_prazo) + (VendasAVista * funcionario.contrato.percentual_comissao_a_vista)
+    private retornarValorDeBeneficiosParaDeduzirDoSalario(): number {
+        const { percentual_plano_odontologico, percentual_plano_saude, percentual_vale_transporte, percentual_vale_alimentacao } = this.contrato
+        const percentuais = percentual_plano_odontologico +
+            percentual_plano_saude +
+            percentual_vale_alimentacao +
+            percentual_vale_transporte;
+        return this.salario_bruto * (percentuais / 100)
+    }
 
-        return (diasTrabalhados * valor_diaria + comissao).toFixed(2);
+    private retornarSalarioBruto(): number {
+        const salario_base = this.contrato.salario_base;
+        const valor_reajuste = (this.cargo.percentual_reajuste / 100) * salario_base;
+        return salario_base + valor_reajuste; //1000 + 200
+    }
+    // Será efetivamente usado quando for implemetando Vendas e título
+    private retornarComissao(): number {
+        const { percentual_comissao_a_prazo, percentual_comissao_a_vista } = this.contrato
+        const VendasAPrazo: number = 0; // Futuramente será pegado do banco de dados
+        const VendasAVista: number = 0; // Futuramente será pegado do banco de dados
+        return (VendasAPrazo * percentual_comissao_a_prazo) + (VendasAVista * percentual_comissao_a_vista);
+    }
+
+    private retornarValorINSS() {
+        const faixa_1: Faixas_INSS = { valor_base: 0, valor_teto: 1212, percentual: 7.5 };
+        const faixa_2: Faixas_INSS = { valor_base: 1212.01, valor_teto: 2427.35, percentual: 9 };
+        const faixa_3: Faixas_INSS = { valor_base: 2427.36, valor_teto: 3641.03, percentual: 12 };
+        const faixa_4: Faixas_INSS = { valor_base: 3641.04, valor_teto: 7087.22, percentual: 14 };
+        const descontar: Array<Faixas_INSS> = [faixa_1, faixa_2, faixa_3, faixa_4]
+        let ImpostoAPagar = 0;
+        let somaDasDiferencasDasFaixas = 0;
+        let DiferencaDaFaixa = 0;
+        for (const i in descontar) {
+            DiferencaDaFaixa = descontar[i].valor_teto - descontar[i].valor_base;
+            if (this.salario_bruto - descontar[i].valor_teto <= 0) {
+                ImpostoAPagar += (descontar[i].percentual / 100) * (this.salario_bruto - somaDasDiferencasDasFaixas)
+                break;
+            }
+            else {
+                somaDasDiferencasDasFaixas += DiferencaDaFaixa;
+                ImpostoAPagar += (descontar[i].percentual / 100) * (DiferencaDaFaixa)
+            }
+        }
+        return ImpostoAPagar;
+    }
+
+    private retornarValorIRRF() {
+        let resultado: number;
+
+        const valor_por_dependentes = 189.59;
+        const salario_deduzido = this.salario_bruto - this.INSS - (valor_por_dependentes * this.funcionario.dependentes);
+        const faixa_1: Faixas_IRRF = { valor_base: 1903.99, valor_teto: 2826.65, percentual: 7.5, valor_a_deduzir: 142.80 }
+        const faixa_2: Faixas_IRRF = { valor_base: 2826.66, valor_teto: 3751.05, percentual: 15, valor_a_deduzir: 354.80 }
+        const faixa_3: Faixas_IRRF = { valor_base: 3751.06, valor_teto: 4664.68, percentual: 22, valor_a_deduzir: 636.13 } //869.36
+        const faixa_4: Faixas_IRRF = { valor_base: 4664.69, valor_teto: 999999.99, percentual: 27, valor_a_deduzir: 869.36 }
+
+        if (salario_deduzido < faixa_1.valor_teto)
+            resultado = 0;
+        else if (salario_deduzido >= faixa_1.valor_base && salario_deduzido <= faixa_1.valor_teto)
+            resultado = (salario_deduzido * faixa_1.percentual / 100) - faixa_1.valor_a_deduzir
+        else if (salario_deduzido >= faixa_2.valor_base && salario_deduzido <= faixa_2.valor_teto)
+            resultado = (salario_deduzido * faixa_2.percentual / 100) - faixa_2.valor_a_deduzir
+        else if (salario_deduzido >= faixa_3.valor_base && salario_deduzido <= faixa_3.valor_teto)
+            resultado = (salario_deduzido * faixa_3.percentual / 100) - faixa_3.valor_a_deduzir
+        else
+            resultado = (salario_deduzido * faixa_4.percentual / 100) - faixa_4.valor_a_deduzir
+        return resultado;
+    }
+
+    public async calcularSalario(id: number, operacao: number): Promise<Number> {
+        this.funcionario = await this.findOne(id);
+        return this.salario_liquido;
+        // return this.salario_proporcional;
     }
 }

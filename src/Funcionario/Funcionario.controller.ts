@@ -1,6 +1,5 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { Funcionario } from './Funcionario.entity';
-import { IService } from '../interface/service.interface';
 import { FuncionarioService } from './Funcionario.service';
 
 export class FuncionarioController {
@@ -16,7 +15,7 @@ export class FuncionarioController {
         }
     };
 
-    async getById(request: Request, response: Response): Promise<Response> {
+    async getById(request: Request, response: Response, next: NextFunction): Promise<Response> {
         const id = Number(request.params.id);
         if (!id) return response.send('ID com caracter inválido');
 
@@ -27,7 +26,7 @@ export class FuncionarioController {
         }
     };
 
-    async Create(request: Request, response: Response): Promise<Response> {
+    async create(request: Request, response: Response): Promise<Response> {
         const user = request.body as Funcionario;
 
         try {
@@ -39,8 +38,9 @@ export class FuncionarioController {
 
     async delete(request: Request, response: Response): Promise<Response> {
         const id = Number(request.params.id);
-        
-        try {            
+        if (!id) return response.send('ID com caracter inválido');
+
+        try {
             return response.status(204).send(await this.funcionarioService.delete(id))
         } catch (error) {
             return response.status(400).json(error)
@@ -58,15 +58,16 @@ export class FuncionarioController {
             return response.status(400).json(error)
         }
     }
-    async FazerPagamento(request: Request, response: Response): Promise<Response> {
+    async calcularSalario(request: Request, response: Response): Promise<Response> {
         const id = Number(request.params.id);
         if (!id) return response.send('ID com caracter inválido');
 
         try {
-            return response.status(201).send(await this.funcionarioService.FazerPagamento(id))
+            const result = await this.funcionarioService.calcularSalario(id, 1);
+            return response.status(201).send(result.toFixed(2))
         } catch (error) {
             console.log(error)
             return response.status(400).json(error)
         }
-    };
+    }
 }

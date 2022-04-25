@@ -15,6 +15,9 @@ export class Funcionario {
     
     @Column()
     data_admissao: Date;
+
+    @Column({default: 0})
+    dependentes: number;
     
     @ManyToOne(() => Contrato, (contrato) => contrato.funcionario, {eager: true})
     contrato : Contrato;
