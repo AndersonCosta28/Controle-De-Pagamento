@@ -3,44 +3,32 @@ import { Funcionario } from "./Funcionario.entity";
 import { IService } from "../interface/service.interface";
 import { ContratoService } from "../Contrato/Contrato.service";
 import { CargoService } from "../Cargo/Cargo.service";
-import { diasNoMes } from "../utils";
+import { QntdDiasNoMes } from "../utils";
 import { Contrato } from "../Contrato/Contrato.entity";
 import { Cargo } from "../Cargo/Cargo.entity";
 import { Faixas_INSS, Faixas_IRRF } from "../interface/outros.type";
+import { FuncionarioConstantes } from "./Funcionario.constantes";
 
 export class FuncionarioService implements IService<Funcionario> {
-    funcionario: Funcionario;
-    private get cargo(): Cargo {
-        return this.funcionario.cargo;
-    }
-    private get contrato(): Contrato {
-        return this.funcionario.contrato;
-    }
-    private get salario_liquido(): number {
-        return this.retornarSalarioLiquido();
-    }
-    // private get salario_proporcional(): number {
-    //     return this.RetornarSalarioProporcional();
-    // }
-    private get salario_bruto(): number {
-        return this.retornarSalarioBruto();
-    }
+    private funcionario: Funcionario;
+    private DiasTrabalhados: number;
+    private cargo: Cargo
 
-    private get IRRF(): number {
-        return this.retornarValorIRRF()
-    }
+    private contrato: Contrato
 
-    private get INSS(): number {
-        return this.retornarValorINSS();
-    }
+    private salario_liquido: number
 
-    private get Valor_de_beneficios_A_Deduzir_Do_Salario(): number {
-        return this.retornarValorDeBeneficiosParaDeduzirDoSalario();
-    }
+    private salario_proporcional: number
 
-    private get comissao(): number {
-        return this.retornarComissao();
-    }
+    private salario_bruto: number
+
+    private IRRF: number
+
+    private INSS: number
+
+    private Valor_de_beneficios_A_Deduzir_Do_Salario: number
+
+    private comissao: number
 
     constructor(private cargoService: CargoService, private contratoService: ContratoService) { }
 
@@ -100,35 +88,35 @@ export class FuncionarioService implements IService<Funcionario> {
     }
 
     private async PreencherForeignKey(body: Funcionario): Promise<Funcionario> {
-        body.cargo = await this.cargoService.findOne(Number(body.cargo));
-        body.contrato = await this.contratoService.findOne(Number(body.contrato));
+        body.cargo = await this.cargoService.findOne(Number(body.cargo.id));
+        body.contrato = await this.contratoService.findOne(Number(body.contrato.id));
         return body;
     }
-    // Será usado quando for implementar ponto eletronico
-    // private RetornarSalarioProporcional(): number {
-    //     const diasTrabalhados: number = 25; // Provavelmente irá se transformar em parâmetro da função        
-    //     const valor_diaria: number = this.salario_liquido / diasNoMes();
 
-    //     return Number((diasTrabalhados * valor_diaria + this.comissao).toFixed(2));
-    // }
-    
+    private RetornarSalarioProporcional(): number {
+        const valor_diaria: number = this.salario_liquido / QntdDiasNoMes();
+        return Number((this.DiasTrabalhados * valor_diaria + this.comissao).toFixed(2));
+    }
+
     private retornarSalarioLiquido() {
         return this.salario_bruto - this.INSS - this.IRRF - this.Valor_de_beneficios_A_Deduzir_Do_Salario;
     }
 
     private retornarValorDeBeneficiosParaDeduzirDoSalario(): number {
         const { percentual_plano_odontologico, percentual_plano_saude, percentual_vale_transporte, percentual_vale_alimentacao } = this.contrato
-        const percentuais = percentual_plano_odontologico +
-            percentual_plano_saude +
-            percentual_vale_alimentacao +
-            percentual_vale_transporte;
+        const { optou_plano_odontologico, optou_plano_saude, optou_vale_alimentacao, optou_vale_transporte } = this.funcionario
+        const percentuais =
+            (optou_plano_odontologico == true ? percentual_plano_odontologico : 0) +
+            (optou_plano_saude == true ? percentual_plano_saude : 0) +
+            (optou_vale_alimentacao == true ? percentual_vale_alimentacao : 0) +
+            (optou_vale_transporte == true ? percentual_vale_transporte : 0);
         return this.salario_bruto * (percentuais / 100)
     }
 
     private retornarSalarioBruto(): number {
         const salario_base = this.contrato.salario_base;
         const valor_reajuste = (this.cargo.percentual_reajuste / 100) * salario_base;
-        return salario_base + valor_reajuste; //1000 + 200
+        return salario_base + valor_reajuste;
     }
     // Será efetivamente usado quando for implemetando Vendas e título
     private retornarComissao(): number {
@@ -184,9 +172,53 @@ export class FuncionarioService implements IService<Funcionario> {
         return resultado;
     }
 
-    public async calcularSalario(id: number, operacao: number): Promise<Number> {
+    private async preencherCampos(id: number, DiasTrabalhados: number) {
         this.funcionario = await this.findOne(id);
-        return this.salario_liquido;
-        // return this.salario_proporcional;
+        this.cargo = this.funcionario.cargo
+        this.contrato = this.funcionario.contrato
+        this.DiasTrabalhados = DiasTrabalhados;
+        this.salario_bruto = this.retornarSalarioBruto()
+        this.INSS = this.retornarValorINSS();
+        this.IRRF = this.retornarValorIRRF()
+        this.Valor_de_beneficios_A_Deduzir_Do_Salario = this.retornarValorDeBeneficiosParaDeduzirDoSalario();
+        this.comissao = this.retornarComissao();
+        this.salario_liquido = this.retornarSalarioLiquido()
+        this.salario_proporcional = this.RetornarSalarioProporcional();
+    }
+
+    public async calcularSalario(id: number, operacao: number, DiasTrabalhados: number = 0): Promise<any> {
+        await this.preencherCampos(id, DiasTrabalhados)
+
+        switch (operacao) {
+            case FuncionarioConstantes.Calcular_Salario_liquido:
+
+                return {
+                    salario_bruto: this.salario_bruto,
+                    impostos: {
+                        INSS: this.INSS,
+                        IRRF: this.IRRF
+                    },
+                    beneficios_a_deduzir: this.Valor_de_beneficios_A_Deduzir_Do_Salario,
+                    salario_liquido: this.salario_liquido,
+                    // DiasTrabalhados: `${DiasTrabalhados}/${diasNoMes()}`,
+                    // salario_proporcional: this.salario_proporcional,
+                }
+
+            case FuncionarioConstantes.Calcular_Salario_Proporcional:
+                return {
+                    salario_bruto: this.salario_bruto,
+                    impostos: {
+                        INSS: this.INSS,
+                        IRRF: this.IRRF
+                    },
+                    beneficios_a_deduzir: this.Valor_de_beneficios_A_Deduzir_Do_Salario,
+                    salario_liquido: this.salario_liquido,
+                    DiasTrabalhados: `${DiasTrabalhados}/${QntdDiasNoMes()}`,
+                    salario_proporcional: this.salario_proporcional,
+                }
+
+            default:
+                return 0;
+        }
     }
 }

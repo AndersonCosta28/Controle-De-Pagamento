@@ -12,23 +12,36 @@ export class Funcionario {
 
     @Column()
     sobrenome: string;
-    
+
     @Column()
     data_admissao: Date;
 
-    @Column({default: 0})
+    @Column({ default: 0 })
     dependentes: number;
-    
-    @ManyToOne(() => Contrato, (contrato) => contrato.funcionario, {eager: true})
-    contrato : Contrato;
-    
-    @ManyToOne(() => Cargo, (cargo) => cargo.funcionario, {eager: true})
+
+    @ManyToOne(() => Contrato, (contrato) => contrato.funcionario, { eager: true })
+    contrato: Contrato;
+
+    @ManyToOne(() => Cargo, (cargo) => cargo.funcionario, { eager: true })
     cargo: Cargo;
+
+    @Column({default: false})
+    optou_vale_transporte: Boolean;
+
+    @Column({default: false})
+    optou_plano_saude: Boolean;
+
+    @Column({default: false})
+    optou_plano_odontologico: Boolean;
+
+    @Column({default: false})
+    optou_vale_alimentacao: Boolean;
+
 
     @BeforeInsert()
     beforeinsert() {
         this.nome = this.nome.toUpperCase().trim();
-        this.sobrenome = this.sobrenome.toUpperCase().trim();        
+        this.sobrenome = this.sobrenome.toUpperCase().trim();
     }
 
     @BeforeUpdate()

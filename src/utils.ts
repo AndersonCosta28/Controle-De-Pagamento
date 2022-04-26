@@ -1,4 +1,4 @@
-export function diasNoMes(): number {
+export function QntdDiasNoMes(): number {
     const data = new Date();
     const diasDoMes = new Date(data.getFullYear(), data.getMonth() + 1, 0).getDate();
     return diasDoMes;
