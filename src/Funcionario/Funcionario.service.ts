@@ -30,6 +30,9 @@ export class FuncionarioService implements IService<Funcionario> {
 
     private comissao: number
 
+    private TotalVendasAVista: number;
+    private TotalVendasAPrazo: number;
+
     constructor(private cargoService: CargoService, private contratoService: ContratoService) { }
 
     async findAll(): Promise<Funcionario[]> {
@@ -120,10 +123,10 @@ export class FuncionarioService implements IService<Funcionario> {
     }
     // Será efetivamente usado quando for implemetando Vendas e título
     private retornarComissao(): number {
+        if (!this.funcionario.contrato.comissionado) return 0
+
         const { percentual_comissao_a_prazo, percentual_comissao_a_vista } = this.contrato
-        const VendasAPrazo: number = 0; // Futuramente será pegado do banco de dados
-        const VendasAVista: number = 0; // Futuramente será pegado do banco de dados
-        return (VendasAPrazo * percentual_comissao_a_prazo) + (VendasAVista * percentual_comissao_a_vista);
+        return (this.TotalVendasAPrazo * percentual_comissao_a_prazo/100) + (this.TotalVendasAVista * percentual_comissao_a_vista/100);
     }
 
     private retornarValorINSS() {
@@ -172,11 +175,13 @@ export class FuncionarioService implements IService<Funcionario> {
         return resultado;
     }
 
-    private async preencherCampos(id: number, DiasTrabalhados: number) {
+    private async preencherCampos(id: number, body: any) {
         this.funcionario = await this.findOne(id);
         this.cargo = this.funcionario.cargo
         this.contrato = this.funcionario.contrato
-        this.DiasTrabalhados = DiasTrabalhados;
+        this.DiasTrabalhados = body.diastrabalhados == undefined ? 0 : body.diastrabalhados;
+        this.TotalVendasAPrazo = body.vendas_a_prazo == undefined ? 0 : body.vendas_a_prazo;
+        this.TotalVendasAVista = body.vendas_a_vista == undefined ? 0 : body.vendas_a_vista;
         this.salario_bruto = this.retornarSalarioBruto()
         this.INSS = this.retornarValorINSS();
         this.IRRF = this.retornarValorIRRF()
@@ -186,8 +191,9 @@ export class FuncionarioService implements IService<Funcionario> {
         this.salario_proporcional = this.RetornarSalarioProporcional();
     }
 
-    public async calcularSalario(id: number, operacao: number, DiasTrabalhados: number = 0): Promise<any> {
-        await this.preencherCampos(id, DiasTrabalhados)
+    public async calcularSalario(id: number, operacao: number, body: any): Promise<any> {
+        console.log(body)
+        await this.preencherCampos(id, body)
 
         switch (operacao) {
             case FuncionarioConstantes.Calcular_Salario_liquido:
@@ -200,8 +206,7 @@ export class FuncionarioService implements IService<Funcionario> {
                     },
                     beneficios_a_deduzir: this.Valor_de_beneficios_A_Deduzir_Do_Salario,
                     salario_liquido: this.salario_liquido,
-                    // DiasTrabalhados: `${DiasTrabalhados}/${diasNoMes()}`,
-                    // salario_proporcional: this.salario_proporcional,
+
                 }
 
             case FuncionarioConstantes.Calcular_Salario_Proporcional:
@@ -213,7 +218,8 @@ export class FuncionarioService implements IService<Funcionario> {
                     },
                     beneficios_a_deduzir: this.Valor_de_beneficios_A_Deduzir_Do_Salario,
                     salario_liquido: this.salario_liquido,
-                    DiasTrabalhados: `${DiasTrabalhados}/${QntdDiasNoMes()}`,
+                    DiasTrabalhados: `${this.DiasTrabalhados}/${QntdDiasNoMes()}`,
+                    Comissao: this.comissao,
                     salario_proporcional: this.salario_proporcional,
                 }
 

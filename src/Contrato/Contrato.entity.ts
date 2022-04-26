@@ -56,9 +56,6 @@ export class Contrato {
             this.percentual_comissao_a_vista = 0
             this.percentual_comissao_a_prazo = 0
         }
-        else {
-            this.salario_base = 0
-        }
     }
 
     @BeforeUpdate()
@@ -67,9 +64,6 @@ export class Contrato {
         if (!this.comissionado) {
             this.percentual_comissao_a_vista = 0
             this.percentual_comissao_a_prazo = 0
-        }
-        else {
-            this.salario_base = 0
         }
     }
 }

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
-import { QntdDiasNoMes } from '../utils';
 import { Funcionario } from './Funcionario.entity';
 import { FuncionarioService } from './Funcionario.service';
+import { validar_campo_diastrabalhados } from './Funcionario.util';
 
 export class FuncionarioController {
 
@@ -65,7 +65,7 @@ export class FuncionarioController {
         if (!id) return response.send('ID com caracter inválido');
 
         try {
-            const result = await this.funcionarioService.calcularSalario(id,1);
+            const result = await this.funcionarioService.calcularSalario(id,1, request.body);
             return response.status(201).send(result/*.toFixed(2)*/)
         } catch (error) {
             console.log(error)
@@ -76,14 +76,13 @@ export class FuncionarioController {
     async calcularSalarioProporcional(request: Request, response: Response): Promise<Response> {
         const id = Number(request.params.id);
         const diastrabalhados = Number(request.body.diastrabalhados)
+
         if (!id) return response.send('ID com caracter inválido');
 
-        if(diastrabalhados === 0) { /* Só passa direto */}
-        else if (!diastrabalhados || diastrabalhados < 0) return response.send('Dias trabalhados inválido');
-        else if (diastrabalhados > QntdDiasNoMes()) return response.send('A quantidade de dias não pode ser maior da quantidade de dias do mês')
+       // if(validar_campo_diastrabalhados(diastrabalhados, response) != 'Tudo OK') return response.end()    ;
 
         try {
-            const result = await this.funcionarioService.calcularSalario(id, 2, diastrabalhados);
+            const result = await this.funcionarioService.calcularSalario(id, 2, request.body);
             return response.status(201).send(result)
         } catch (error) {
             console.log(error)
