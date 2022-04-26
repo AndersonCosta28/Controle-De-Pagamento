@@ -1,7 +1,8 @@
 import { getRepository } from "typeorm";
 import { Setor } from "./Setor.entity";
+import { IService } from "../interface/service.interface";
 
-export class SetorService implements SetorService {
+export class SetorService implements IService<Setor> {
 
     async findAll(): Promise<Setor[]> {
         return await getRepository(Setor).find({ order: { id: "ASC" } });

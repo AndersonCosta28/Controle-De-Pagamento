@@ -18,4 +18,4 @@ app.use('/contrato', RouterContrato)
 app.use('/cargo', RouterCargo)
 app.use('/setor', RouterSetor)
 
-export default app 
+export { app }
