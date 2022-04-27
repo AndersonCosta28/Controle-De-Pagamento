@@ -40,8 +40,8 @@ npm run start
 ## :runner: Como funciona:
 1. Executar os <a href="#rodando_o_projeto">comandos para compilar e iniciar o projeto</a>
 2. Com o [Postman](https://www.postman.com/) ou [Insomnia](https://insomnia.rest/download), usar a rota `http://localhost:3000/`
-3. <span id="etapa_3">Usando o endpoint no método `POST` respectivamente criar nessa sequência:
-  * `contrato` -> Informar esses parâmetros:
+3. Usando o endpoint no método `POST` respectivamente criar nessa sequência:
+  * `contrato`
       * `nome`: Exemplo: CLT, PJ, CLT + Comissionado e etc...;
       * `comissionado`: Informando `true` deve-se informar o valor inteiro do `percentual_comissao_a_vista` e `percentual_comissao_a_prazo`. Caso seja `false` os campos de ambos campos serão definidos como 0;
       * `percentual_comissao_a_vista`: Informar o valor inteiro do % de comissao a vista. **Obs.: Não informar o valor fracionado;**
@@ -49,37 +49,43 @@ npm run start
       * `salario_base`: <span id="salario_base">este será o valor base para calcular o salário bruto do funcionário e com ele será levado em conta o [`percentual_reajuste`](#percentual_reajuste) no `cargo` do `funcionario`;</span>
       <br>
 
-  * `setor` -> 
+  * `setor`
     * `nome` por exemplo: 
     * `estoque`, financeiro, suporte, assistência, vendas;
     <br>
     
-  * `cargo` -> 
+  * `cargo`
       * `nome`: por exemplo: desenvolvedor Jr 1, vendedor, estoquista, cirurgião chefe e etc...;
       * `setorId`: ID do setor ao qual pertence;
       * `percentual_reajuste`: <span id="percentual_reajuste">Informar o % que aquele cargo receberá sobre o [`salario_base`](#salario_base) para calcular o salário bruto;</span>
 
       <br>
 
-  * `funcionario` -> Informar esses parâmetros:
+  * `funcionario`
       * `nome`
       * `sobrenome`
       * `data_admissao`
-      * `dependente`: Nº de dependentes para auxíliar a calcular o IRRF
-      * `contrato`: ID do contrato
-      * `cargo`: ID do cargo 
-</span>
+      * `dependente`: Nº de dependentes para auxíliar a calcular o IRRF;
+      * `contrato`: ID do contrato;
+      * `cargo`: ID do cargo;
+      * `optou_vale_transporte`: Default `false` permitindo que o este benefício não seja cobrado no calculo do salário líquido
+      * `optou_plano_saude`: Default `false` permitindo que o este benefício não seja cobrado no calculo do salário líquido
+      * `optou_plano_odontologico`: Default `false` permitindo que o este benefício não seja cobrado no calculo do salário líquido
+      * `optou_vale_alimentacao`: Default `false` permitindo que o este benefício não seja cobrado no calculo do salário líquido
+
+
 4. Após criação da sua "pequena Empresa" vamos consumir a API. Usando o método `GET` e rota http://localhost:3000/funcionario/calcularsalarioproporcional/:id, o `id` do funcionario e no `body` o seguinte formato:
-`{
+
+* `{
     "diastrabalhados": 26,
     "vendas_a_vista": 5000,
     "vendas_a_prazo": 5000,
     "outras_deducoes": 100
 }`
-<br>
-**Obs.:** Se nenhum desses valores forem informados serão configurados como 0.
-**Obs 2.:** O mês e ano sempre será o atual (Hoje).
-**Obs 3.:** Disponibilizo a rota http://localhost:3000/funcionario/calcularsalarioliquido/:id dispensando a necessidade de informar os dias trabalhados.
+
+* **Obs.:** Se nenhum desses valores forem informados serão configurados como 0.
+* **Obs 2.:** O mês e ano sempre será o atual (Hoje).
+* **Obs 3.:** Disponibilizo a rota http://localhost:3000/funcionario/calcularsalarioliquido/:id dispensando a necessidade de informar os dias trabalhados.
 
 
 ## :handshake: Colaboradores
