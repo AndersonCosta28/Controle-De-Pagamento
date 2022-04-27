@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from 'express'
-import { CalcularSalario } from './calcularsalario.util';
-import { OperacaesParaCalcularSalario } from './Funcionario.constantes';
+
 import { Funcionario } from './Funcionario.entity';
 import { FuncionarioService } from './Funcionario.service';
-import { validar_campo_diastrabalhados } from './Funcionario.util';
+import { CalcularSalario, OperacoesParaCalcularSalario, validar_campo_diastrabalhados } from './Funcionario.util';
 
 export class FuncionarioController {
 
@@ -67,7 +66,7 @@ export class FuncionarioController {
         if (!id_funcionario) return response.send('ID com caracter inválido');
 
         try {
-            const result = await this.calcularSalarioService.calcularSalario(id_funcionario, OperacaesParaCalcularSalario.Liquido, request.body);
+            const result = await this.calcularSalarioService.calcularSalario(id_funcionario, OperacoesParaCalcularSalario.Liquido, request.body);
             return response.status(201).send(result/*.toFixed(2)*/)
         } catch (error) {
             console.log(error)
@@ -84,7 +83,7 @@ export class FuncionarioController {
         if (validar_campo_diastrabalhados(diastrabalhados, response) != 'Tudo OK') { return response.end() };
 
         try {
-            const result = await this.calcularSalarioService.calcularSalario(id_funcionario, OperacaesParaCalcularSalario.Proporcional, request.body);
+            const result = await this.calcularSalarioService.calcularSalario(id_funcionario, OperacoesParaCalcularSalario.Proporcional, request.body);
             return response.status(201).send(result)
         } catch (error) {
             console.log(error)
