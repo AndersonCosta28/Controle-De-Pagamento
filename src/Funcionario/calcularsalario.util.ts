@@ -120,27 +120,28 @@ export class CalcularSalario {
             case OperacaesParaCalcularSalario.Liquido:
 
                 return {
-                    salario_bruto: this.salario_bruto,
+                    salario_bruto: this.salario_bruto.toFixed(2),
                     impostos: {
-                        INSS: this.INSS,
-                        IRRF: this.IRRF
+                        INSS: this.INSS.toFixed(2),
+                        IRRF: this.IRRF.toFixed(2)
                     },
-                    beneficios_a_deduzir: this.Valor_de_beneficios_A_Deduzir_Do_Salario,
-                    salario_liquido: this.salario_liquido,
+                    beneficios_a_deduzir: this.Valor_de_beneficios_A_Deduzir_Do_Salario.toFixed(2),
+                    Comissao: this.comissao.toFixed(2),
+                    salario_liquido: this.salario_liquido.toFixed(2),
                 }
 
             case OperacaesParaCalcularSalario.Proporcional:
                 return {
-                    salario_bruto: this.salario_bruto,
+                    salario_bruto: this.salario_bruto.toFixed(2),
                     impostos: {
-                        INSS: this.INSS,
-                        IRRF: this.IRRF
+                        INSS: this.INSS.toFixed(2),
+                        IRRF: this.IRRF.toFixed(2)
                     },
-                    beneficios_a_deduzir: this.Valor_de_beneficios_A_Deduzir_Do_Salario,
-                    salario_liquido: this.salario_liquido,
+                    beneficios_a_deduzir: this.Valor_de_beneficios_A_Deduzir_Do_Salario.toFixed(2),
+                    salario_liquido: this.salario_liquido.toFixed(2),
                     DiasTrabalhados: `${this.DiasTrabalhados}/${QntdDiasNoMes()}`,
-                    Comissao: this.comissao,
-                    salario_proporcional: this.salario_proporcional,
+                    Comissao: this.comissao.toFixed(2),
+                    salario_proporcional: this.salario_proporcional.toFixed(2),
                 }
 
             default:
