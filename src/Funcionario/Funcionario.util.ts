@@ -13,7 +13,6 @@ export function validar_campo_diastrabalhados(diastrabalhados: Number, response:
     else return 'Tudo OK';
 }
 
-
 export enum OperacoesParaCalcularSalario {
     Liquido = 1,
     Proporcional = 2
@@ -104,7 +103,7 @@ export class CalcularSalario {
                 ImpostoAPagar += (Faixas.INSS[i].percentual / 100) * (DiferencaDaFaixa)
             }
         }
-        return ImpostoAPagar;
+        return ImpostoAPagar < 0 ? 0 : ImpostoAPagar;
     }
 
     private retornarValorIRRF() {
@@ -125,7 +124,24 @@ export class CalcularSalario {
                 ImpostoAPagar += (FaixaIRRF.percentual / 100) * (DiferencaDaFaixa)
             }
         }
-        return ImpostoAPagar;
+        return ImpostoAPagar < 0 ? 0 : ImpostoAPagar;
+    }
+
+
+    public async calcularSalario(id: number, operacao: number, body: any): Promise<any> {
+        await this.preencherCampos(id, body)
+
+        switch (operacao) {
+            case OperacoesParaCalcularSalario.Liquido:
+                this.DiasTrabalhados = QntdDiasNoMes()
+                return this.RetornoDaRequisicao()
+
+            case OperacoesParaCalcularSalario.Proporcional:
+                return this.RetornoDaRequisicao()
+
+            default:
+                return 0;
+        }
     }
 
     private async preencherCampos(id: number, body: any) {
@@ -145,40 +161,28 @@ export class CalcularSalario {
         this.salario_proporcional = this.RetornarSalarioProporcional();
     }
 
-    public async calcularSalario(id: number, operacao: number, body: any): Promise<any> {
-        await this.preencherCampos(id, body)
-
-        switch (operacao) {
-            case OperacoesParaCalcularSalario.Liquido:
-
-                return {
-                    salario_bruto: this.salario_bruto.toFixed(2),
-                    impostos: {
-                        INSS: this.INSS.toFixed(2),
-                        IRRF: this.IRRF.toFixed(2)
-                    },
-                    beneficios_a_deduzir: this.Valor_de_beneficios_A_Deduzir_Do_Salario.toFixed(2),
-                    Comissao: this.comissao.toFixed(2),
-                    salario_liquido: this.salario_liquido.toFixed(2),
-                }
-
-            case OperacoesParaCalcularSalario.Proporcional:
-                return {
-                    salario_bruto: this.salario_bruto.toFixed(2),
-                    impostos: {
-                        INSS: this.INSS.toFixed(2),
-                        IRRF: this.IRRF.toFixed(2)
-                    },
-                    beneficios_a_deduzir: this.Valor_de_beneficios_A_Deduzir_Do_Salario.toFixed(2),
-                    salario_liquido: this.salario_liquido.toFixed(2),
-                    DiasTrabalhados: `${this.DiasTrabalhados}/${QntdDiasNoMes()}`,
-                    Comissao: this.comissao.toFixed(2),
-                    salario_proporcional: this.salario_proporcional.toFixed(2),
-                }
-
-            default:
-                return 0;
+    private RetornoDaRequisicao() {
+        const [dia_da_semana, mes, dia, ano, hora, fuso_horario] = new Date().toString().split(' ');
+        return {
+            funcinario: {
+                id: this.funcionario.id,
+                nome_completo: this.funcionario.nome + ' ' + this.funcionario.sobrenome,
+                cargo: this.funcionario.cargo.nome,
+                data_admissao: this.funcionario.data_admissao.toLocaleDateString('pt-br'),
+                setor: this.funcionario.cargo.setor
+            },
+            folha_mensal: `${mes}/${ano}`,
+            salario_bruto: this.salario_bruto.toFixed(2),
+            impostos: {
+                INSS: this.INSS.toFixed(2),
+                IRRF: this.IRRF.toFixed(2)
+            },
+            beneficios_a_deduzir: this.Valor_de_beneficios_A_Deduzir_Do_Salario.toFixed(2),
+            outras_deducoes: this.OutrasDeducoes,
+            salario_liquido: this.salario_liquido.toFixed(2),
+            DiasTrabalhados: `${this.DiasTrabalhados}/${QntdDiasNoMes()}`,
+            Comissao: this.comissao.toFixed(2),
+            salario_proporcional: this.salario_proporcional.toFixed(2),
         }
     }
-
 }
