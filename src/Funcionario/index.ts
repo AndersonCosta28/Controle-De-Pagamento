@@ -2,8 +2,10 @@ import { FuncionarioController } from "./Funcionario.controller";
 import { FuncionarioService } from "./Funcionario.service";
 import { service as cargoService } from "../Cargo";
 import { service as contratoService } from "../Contrato";
+import { CalcularSalario } from "./calcularsalario.util";
 
 const service: FuncionarioService = new FuncionarioService(cargoService, contratoService)
-const controller = new FuncionarioController(service)
+const calcularsalario = new CalcularSalario(service);
+const controller = new FuncionarioController(service, calcularsalario)
 
-export { controller, service }
+export { controller, service, calcularsalario }

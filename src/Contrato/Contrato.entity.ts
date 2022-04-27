@@ -56,6 +56,9 @@ export class Contrato {
             this.percentual_comissao_a_vista = 0
             this.percentual_comissao_a_prazo = 0
         }
+
+        if (!!this.comissionado && (!this.percentual_comissao_a_vista || !this.percentual_comissao_a_prazo))
+            throw 'Erro beforeInsert contrato.entity: Os campos de percentuais de comissão devem ser informados '
     }
 
     @BeforeUpdate()
@@ -65,5 +68,8 @@ export class Contrato {
             this.percentual_comissao_a_vista = 0
             this.percentual_comissao_a_prazo = 0
         }
+
+        if (this.comissionado && (!this.percentual_comissao_a_vista || !this.percentual_comissao_a_prazo))
+            throw 'Erro beforeInsert contrato.entity: Os campos de percentuais de comissão devem ser informados '
     }
 }

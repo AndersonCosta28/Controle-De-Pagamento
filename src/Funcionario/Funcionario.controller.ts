@@ -1,11 +1,13 @@
 import { NextFunction, Request, Response } from 'express'
+import { CalcularSalario } from './calcularsalario.util';
+import { OperacaesParaCalcularSalario } from './Funcionario.constantes';
 import { Funcionario } from './Funcionario.entity';
 import { FuncionarioService } from './Funcionario.service';
 import { validar_campo_diastrabalhados } from './Funcionario.util';
 
 export class FuncionarioController {
 
-    constructor(private funcionarioService: FuncionarioService) { }
+    constructor(private funcionarioService: FuncionarioService, private calcularSalarioService: CalcularSalario) { }
 
     async getAll(request: Request, response: Response): Promise<Response> {
         try {
@@ -61,11 +63,11 @@ export class FuncionarioController {
     }
 
     async calcularSalarioliquido(request: Request, response: Response): Promise<Response> {
-        const id = Number(request.params.id);
-        if (!id) return response.send('ID com caracter inválido');
+        const id_funcionario = Number(request.params.id);
+        if (!id_funcionario) return response.send('ID com caracter inválido');
 
         try {
-            const result = await this.funcionarioService.calcularSalario(id,1, request.body);
+            const result = await this.calcularSalarioService.calcularSalario(id_funcionario, OperacaesParaCalcularSalario.Liquido, request.body);
             return response.status(201).send(result/*.toFixed(2)*/)
         } catch (error) {
             console.log(error)
@@ -74,15 +76,15 @@ export class FuncionarioController {
     }
 
     async calcularSalarioProporcional(request: Request, response: Response): Promise<Response> {
-        const id = Number(request.params.id);
+        const id_funcionario = Number(request.params.id);
         const diastrabalhados = Number(request.body.diastrabalhados)
 
-        if (!id) return response.send('ID com caracter inválido');
+        if (!id_funcionario) return response.send('ID com caracter inválido');
 
-       // if(validar_campo_diastrabalhados(diastrabalhados, response) != 'Tudo OK') return response.end()    ;
+        if (validar_campo_diastrabalhados(diastrabalhados, response) != 'Tudo OK') { return response.end() };
 
         try {
-            const result = await this.funcionarioService.calcularSalario(id, 2, request.body);
+            const result = await this.calcularSalarioService.calcularSalario(id_funcionario, OperacaesParaCalcularSalario.Proporcional, request.body);
             return response.status(201).send(result)
         } catch (error) {
             console.log(error)

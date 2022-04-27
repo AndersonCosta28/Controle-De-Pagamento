@@ -4,10 +4,11 @@
 API afim de gerenciar pagamento de funcionários a partir do seu cargo e contrato.
 
 ## :books: Funcionalidades
-* <b>CRUD de cargos</b>: Manipulação de projetos.
-* <b>CRUD de funcionarios</b>: Manipulação de colaboradores.
-* <b>CRUD de contratos</b>: Manipulação de contratos.
-* <b>CRUD de setores</b>: Manipulação de setores.
+* **CRUD de cargos**: Manipulação de projetos.
+* **CRUD de funcionarios**: Manipulação de colaboradores.
+* **CRUD de contratos**: Manipulação de contratos.
+* **CRUD de setores**: Manipulação de setores.
+* **Cálculo de salário:** Calcular salário integral ou proporcional aos dias trabalhados descontando INSS e IRRF
 
 ## :wrench: Tecnologias utilizadas
 * [PostgreSQL](https://www.postgresql.org/)
@@ -30,32 +31,56 @@ npm run start
 * Aviso 2
  -->
 ## :soon: Implementações futuras
-* CRUD de venda (controlar vendas de funcionarios comissionados)
+<!-- * CRUD de venda (controlar vendas de funcionarios comissionados)
 * CRUD de venda_pagamento (controlar comissoões)
-* CRUD de ponto_funcionario (controlar dias trabalhados)
+* CRUD de ponto_funcionario (controlar dias trabalhados) -->
 * Documentação da API
 
 
 ## :runner: Como funciona:
 1. Executar os <a href="#rodando_o_projeto">comandos para compilar e iniciar o projeto</a>
 2. Com o [Postman](https://www.postman.com/) ou [Insomnia](https://insomnia.rest/download), usar a rota `http://localhost:3000/`
-3. <span id="etapa_3">Usando o endpoint no verbo POST respectivamente criar nessa sequência:
-  * contrato -> Informar esses parâmetros: 
-      * eComissionado: se for true deverá informar o % de comissao a vista e a prazo (exemplo de vendedores). Caso seja false os campos de % será 0;
-      * salario_base: valor em que o cargo do funcionário irá se basear para calcular o pagamento do salário, em situações de reajustes anuais, será necessário somente alterar o salário base do contrato sem mexer no cargo ou funcionário
-  * setor -> nome do setor, por exemplo: estoque, financeiro, suporte, assistência, vendas;
-  * cargo -> Informar esses parâmetros: 
-      * nome do cargo, por exemplo: desenvolvedor Jr 1, vendedor, estoquista, cirurgião chefe e etc...;
-      * Referenciando o setor ao qual pertence;
-      * Informar o % que aquele cargo receberá sobre o salário base para calcular o salário;
-  * funcionario -> Informar esses parâmetros:
-      * nome
-      * sobrenome
-      * data_admissao
-      * contrato -> Passar o ID do contrato criado (Quando montar o front-end provavelmente irá passar o objeto inteiro)
-      * cargo -> Passar o ID do cargo criado (Quando montar o front-end provavelmente irá passar o objeto inteiro)
+3. <span id="etapa_3">Usando o endpoint no método `POST` respectivamente criar nessa sequência:
+  * `contrato` -> Informar esses parâmetros:
+      * `nome`: Exemplo: CLT, PJ, CLT + Comissionado e etc...;
+      * `comissionado`: Informando `true` deve-se informar o valor inteiro do `percentual_comissao_a_vista` e `percentual_comissao_a_prazo`. Caso seja `false` os campos de ambos campos serão definidos como 0;
+      * `percentual_comissao_a_vista`: Informar o valor inteiro do % de comissao a vista. **Obs.: Não informar o valor fracionado;**
+      * `percentual_comissao_a_prazo`: Informar o valor inteiro do % de comissao a prazo. **Obs.: Não informar o valor fracionado;**
+      * `salario_base`: <span id="salario_base">este será o valor base para calcular o salário bruto do funcionário e com ele será levado em conta o [`percentual_reajuste`](#percentual_reajuste) no `cargo` do `funcionario`;</span>
+      <br>
+
+  * `setor` -> 
+    * `nome` por exemplo: 
+    * `estoque`, financeiro, suporte, assistência, vendas;
+    <br>
+    
+  * `cargo` -> 
+      * `nome`: por exemplo: desenvolvedor Jr 1, vendedor, estoquista, cirurgião chefe e etc...;
+      * `setorId`: ID do setor ao qual pertence;
+      * `percentual_reajuste`: <span id="percentual_reajuste">Informar o % que aquele cargo receberá sobre o [`salario_base`](#salario_base) para calcular o salário bruto;</span>
+
+      <br>
+
+  * `funcionario` -> Informar esses parâmetros:
+      * `nome`
+      * `sobrenome`
+      * `data_admissao`
+      * `dependente`: Nº de dependentes para auxíliar a calcular o IRRF
+      * `contrato`: ID do contrato
+      * `cargo`: ID do cargo 
 </span>
-4. Consumir a rota GET http://localhost:3000/funcionario/FazerPagamento/:id passando o ID do funcionario
+4. Após criação da sua "pequena Empresa" vamos consumir a API. Usando o método `GET` e rota http://localhost:3000/funcionario/calcularsalarioproporcional/:id, o `id` do funcionario e no `body` o seguinte formato:
+`{
+    "diastrabalhados": 26,
+    "vendas_a_vista": 5000,
+    "vendas_a_prazo": 5000,
+    "outras_deducoes": 100
+}`
+<br>
+**Obs.:** Se nenhum desses valores forem informados serão configurados como 0.
+**Obs 2.:** O mês e ano sempre será o atual (Hoje).
+**Obs 3.:** Disponibilizo a rota http://localhost:3000/funcionario/calcularsalarioliquido/:id dispensando a necessidade de informar os dias trabalhados.
+
 
 ## :handshake: Colaboradores
 <table>
@@ -64,7 +89,7 @@ npm run start
       <a href="https://github.com/Mert1s">
         <img src="https://avatars.githubusercontent.com/u/70107407?v=4" width="100px;" alt="Foto de Mert1s no GitHub"/><br>
         <sub>
-          <b>Mert1s</b>
+          **Mert1s**
         </sub>
       </a>
     </td>
@@ -72,4 +97,4 @@ npm run start
 </table>
 
 ## :dart: Status do projeto
-* Andamento
+* ![](https://us-central1-progress-markdown.cloudfunctions.net/progress/99)

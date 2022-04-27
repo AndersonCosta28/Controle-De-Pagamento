@@ -1,7 +1,6 @@
 
 import express from 'express';
 import { RouterUsuario } from './Usuario/Usuario.routes';
-import "./database"
 import { RouterFuncionario } from './Funcionario/Funcionario.routes';
 import { RouterContrato } from './Contrato/Contrato.routes';
 import { RouterCargo } from './Cargo/Cargo.routes';
