@@ -8,7 +8,7 @@ export class UsuarioController {
 
     async getAll(request: Request, response: Response): Promise<Response> {
         try {
-            return response.status(201).send(await this.usuarioService.findAll())
+            return response.status(200).send(await this.usuarioService.findAll())
         } catch (error) {
             console.log(error)
             return response.status(400).json(error)
@@ -20,7 +20,7 @@ export class UsuarioController {
         if (!id) return response.send('ID com caracter inválido');
 
         try {
-            return response.status(201).send(await this.usuarioService.findOne(id))
+            return response.status(200).send(await this.usuarioService.findOne(id))
         } catch (error) {
             return response.status(400).json(error)
         }

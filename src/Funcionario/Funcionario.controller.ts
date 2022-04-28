@@ -10,7 +10,7 @@ export class FuncionarioController {
 
     async getAll(request: Request, response: Response): Promise<Response> {
         try {
-            return response.status(201).send(await this.funcionarioService.findAll())
+            return response.status(200).send(await this.funcionarioService.findAll())
         } catch (error) {
             console.log(error)
             return response.status(400).json(error)
@@ -22,7 +22,7 @@ export class FuncionarioController {
         if (!id) return response.send('ID com caracter inválido');
 
         try {
-            return response.status(201).send(await this.funcionarioService.findOne(id))
+            return response.status(200).send(await this.funcionarioService.findOne(id))
         } catch (error) {
             return response.status(400).json(error)
         }
