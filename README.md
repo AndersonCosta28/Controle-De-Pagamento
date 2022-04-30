@@ -30,7 +30,7 @@ npm run start
 * Aviso 1
 * Aviso 2
  -->
-## :soon: Implementações futuras
+<!-- ## :soon: Implementações futuras -->
 <!-- * CRUD de venda (controlar vendas de funcionarios comissionados)
 * CRUD de venda_pagamento (controlar comissoões)
 * CRUD de ponto_funcionario (controlar dias trabalhados) -->
