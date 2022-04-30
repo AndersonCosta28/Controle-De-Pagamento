@@ -1,9 +1,10 @@
 import { readFileSync, writeFileSync } from "fs";
 import { component_cargo, path_cargo } from './Cargo/Cargo.swagger'
 import { component_contrato, path_contrato } from './Contrato/Contrato.swagger'
-import { component_funcionario, path_funcionario } from './Funcionario/Funcionario.swagger'
-import { component_util_CalcularSalarioLiquidoDTO, component_util_CalcularSalarioProporcionalDTO, path_util_CalcularSalarioLiquidoDTO, path_util_CalcularSalarioProporcionalDTO } from "./Funcionario/Funcionario.util";
+import { component_funcionario, component_util_CalcularSalarioLiquidoDTO, component_util_CalcularSalarioProporcionalDTO, path_funcionario, path_util_CalcularSalarioLiquidoDTO, path_util_CalcularSalarioProporcionalDTO } from './Funcionario/Funcionario.swagger'
 import { component_setor, path_setor } from './Setor/Setor.swagger';
+
+
 
 const pkgjson = JSON.parse(readFileSync(process.env.npm_package_json, 'utf-8'));
 
