@@ -24,6 +24,6 @@ const required = [
 ]
 const template = new TemplateSwaggerCrud(entidade, example, propriedades, required)
 const component_cargo = template.component()
-const path_cargo = template.path()
+const paht_CRUD_cargo = template.path()
 
-export { path_cargo, component_cargo }
+export { paht_CRUD_cargo, component_cargo }

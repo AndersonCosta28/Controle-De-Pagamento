@@ -59,9 +59,6 @@ const required = [
     "contrato",
     "cargo"
 ]
-const template = new TemplateSwaggerCrud(entidade, example, propriedades, required)
-const component_funcionario = template.component()
-const path_funcionario = template.path()
 
 const CalcularSalarioProporcionalDTO: SwaggerUtil = {
     summary: 'Rota para calcular salário proporcional',
@@ -174,9 +171,6 @@ const CalcularSalarioLiquidoDTO: SwaggerUtil = {
                 "application/json": {
                     schema: {
                         properties: {
-                            diastrabalhados: {
-                                type: 'number'
-                            },
                             vendas_a_vista: {
                                 type: 'number'
                             },
@@ -188,7 +182,7 @@ const CalcularSalarioLiquidoDTO: SwaggerUtil = {
                             }
                         }
                     },
-                    example: { diastrabalhados: 26, vendas_a_vista: 5000, vendas_a_prazo: 5000, outras_deducoes: 100 },
+                    example: { vendas_a_vista: 5000, vendas_a_prazo: 5000, outras_deducoes: 100 },
                 }
             }
         }
@@ -211,12 +205,16 @@ const CalcularSalarioLiquidoDTO: SwaggerUtil = {
     required: []
 }
 
-
+const template = new TemplateSwaggerCrud(entidade, example, propriedades, required)
 const template_calcularSalarioProporcional = new TemplateSwaggerUtils(CalcularSalarioProporcionalDTO);
 const template_calcularSalarioLiquido = new TemplateSwaggerUtils(CalcularSalarioLiquidoDTO);
-const path_util_CalcularSalarioProporcionalDTO = template_calcularSalarioProporcional.pathComParametroByID('post');
+
+const component_funcionario = template.component()
 const component_util_CalcularSalarioProporcionalDTO = template_calcularSalarioProporcional.component();
-const path_util_CalcularSalarioLiquidoDTO = template_calcularSalarioLiquido.pathComParametroByID('post');
 const component_util_CalcularSalarioLiquidoDTO = template_calcularSalarioLiquido.component();
 
-export { path_funcionario, component_funcionario, path_util_CalcularSalarioProporcionalDTO, component_util_CalcularSalarioProporcionalDTO, path_util_CalcularSalarioLiquidoDTO, component_util_CalcularSalarioLiquidoDTO }
+const paht_CRUD_funcionairo = template.path()
+const path_util_CalcularSalarioProporcionalDTO = template_calcularSalarioProporcional.pathComParametroByID('post');
+const path_util_CalcularSalarioLiquidoDTO = template_calcularSalarioLiquido.pathComParametroByID('post');
+
+export { paht_CRUD_funcionairo, component_funcionario, path_util_CalcularSalarioProporcionalDTO, component_util_CalcularSalarioProporcionalDTO, path_util_CalcularSalarioLiquidoDTO, component_util_CalcularSalarioLiquidoDTO }

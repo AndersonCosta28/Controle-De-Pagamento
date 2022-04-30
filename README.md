@@ -9,11 +9,13 @@ API afim de gerenciar pagamento de funcionários a partir do seu cargo e contrat
 * **CRUD de contratos**: Manipulação de contratos.
 * **CRUD de setores**: Manipulação de setores.
 * **Cálculo de salário:** Calcular salário integral ou proporcional aos dias trabalhados descontando INSS e IRRF
+* **Documentação da API:** Essa API é documentada usando [Swagger.io](https://swagger.io/) versão 3, verifique a rota `http://localhost:3000/api-docs/`
 
 ## :wrench: Tecnologias utilizadas
 * [PostgreSQL](https://www.postgresql.org/)
 * [TypeORM](https://github.com/generalpiston/typeorm-encrypted)
 * [Express](https://expressjs.com/)
+* [Swagger.io](https://swagger.io/)
 
 ## :rocket: <span id="rodando_o_projeto">Rodando o projeto</span>
 Para rodar o repositório é necessário clonar o mesmo, e executar os seguintse comandos para iniciar o projeto:
@@ -39,7 +41,7 @@ npm run start
 
 ## :runner: Como funciona:
 1. Executar os <a href="#rodando_o_projeto">comandos para compilar e iniciar o projeto</a>
-2. Com o [Postman](https://www.postman.com/) ou [Insomnia](https://insomnia.rest/download), usar a rota `http://localhost:3000/`
+2. Com o [Postman](https://www.postman.com/) ou [Insomnia](https://insomnia.rest/download), usar a url `http://localhost:3000/` como padrão
 3. Usando o endpoint no método `POST` respectivamente criar nessa sequência:
   * `contrato`
       * `nome`: Exemplo: CLT, PJ, CLT + Comissionado e etc...;

@@ -68,6 +68,6 @@ const required = [
 
 const template = new TemplateSwaggerCrud(entidade, example, propriedades, required)
 const component_contrato = template.component()
-const path_contrato = template.path()
+const paht_CRUD_contrato = template.path()
 
-export { path_contrato, component_contrato }
+export { paht_CRUD_contrato, component_contrato }

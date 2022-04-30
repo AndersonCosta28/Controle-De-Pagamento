@@ -1,8 +1,8 @@
 import { readFileSync, writeFileSync } from "fs";
-import { component_cargo, path_cargo } from './Cargo/Cargo.swagger'
-import { component_contrato, path_contrato } from './Contrato/Contrato.swagger'
-import { component_funcionario, component_util_CalcularSalarioLiquidoDTO, component_util_CalcularSalarioProporcionalDTO, path_funcionario, path_util_CalcularSalarioLiquidoDTO, path_util_CalcularSalarioProporcionalDTO } from './Funcionario/Funcionario.swagger'
-import { component_setor, path_setor } from './Setor/Setor.swagger';
+import { component_cargo, paht_CRUD_cargo } from './Cargo/Cargo.swagger'
+import { component_contrato, paht_CRUD_contrato } from './Contrato/Contrato.swagger'
+import { component_funcionario, component_util_CalcularSalarioLiquidoDTO, component_util_CalcularSalarioProporcionalDTO, paht_CRUD_funcionairo, path_util_CalcularSalarioLiquidoDTO, path_util_CalcularSalarioProporcionalDTO } from './Funcionario/Funcionario.swagger'
+import { component_setor, paht_CRUD_setor } from './Setor/Setor.swagger';
 
 
 
@@ -13,7 +13,7 @@ const components = {
         ...component_setor, ...component_funcionario, ...component_contrato, ...component_cargo, ...component_util_CalcularSalarioProporcionalDTO, ...component_util_CalcularSalarioLiquidoDTO
     }
 }
-const paths = { ...path_setor, ...path_funcionario, ...path_contrato, ...path_cargo, ...path_util_CalcularSalarioProporcionalDTO, ...path_util_CalcularSalarioLiquidoDTO }
+const paths = { ...paht_CRUD_setor, ...paht_CRUD_funcionairo, ...paht_CRUD_contrato, ...paht_CRUD_cargo, ...path_util_CalcularSalarioProporcionalDTO, ...path_util_CalcularSalarioLiquidoDTO }
 
 
 const documento = {

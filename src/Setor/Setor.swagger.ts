@@ -16,6 +16,6 @@ const required = [
 
 const template = new TemplateSwaggerCrud(entidade, example, propriedades, required)
 const component_setor = template.component()
-const path_setor = template.path()
+const paht_CRUD_setor = template.path()
 
-export { path_setor, component_setor }
+export { paht_CRUD_setor, component_setor }
