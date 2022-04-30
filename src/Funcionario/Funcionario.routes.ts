@@ -8,6 +8,6 @@ RouterFuncionario.get('/:id', controller.getById.bind(controller));
 RouterFuncionario.post('/', controller.create.bind(controller));
 RouterFuncionario.put('/:id', controller.update.bind(controller));
 RouterFuncionario.delete('/:id', controller.delete.bind(controller));
-RouterFuncionario.get('/calcularsalarioliquido/:id', controller.calcularSalarioliquido.bind(controller))
-RouterFuncionario.get('/calcularsalarioproporcional/:id', controller.calcularSalarioProporcional.bind(controller))
+RouterFuncionario.post('/calcularsalarioliquido/:id', controller.calcularSalarioliquido.bind(controller))
+RouterFuncionario.post('/calcularsalarioproporcional/:id', controller.calcularSalarioProporcional.bind(controller))
 export { RouterFuncionario }

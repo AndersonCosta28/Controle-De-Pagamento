@@ -1,7 +1,7 @@
 {
-   "name": "api-em-typescript-com-typeorm",
-   "version": "0.0.1",
-   "description": "",
+   "name": "gerenciamento-de-pagamento",
+   "version": "1.0.0",
+   "description": "API para cadastrar funcionarios, setores, cargos e contrato para calcular salários e manejar o cargo de funcionário com mais facilidade",
    "main": "build/server.js",
    "dependencies": {
       "express": "^4.17.3",

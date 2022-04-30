@@ -34,7 +34,7 @@ npm run start
 <!-- * CRUD de venda (controlar vendas de funcionarios comissionados)
 * CRUD de venda_pagamento (controlar comissoões)
 * CRUD de ponto_funcionario (controlar dias trabalhados) -->
-* Documentação da API
+<!-- * Documentação da API -->
 
 
 ## :runner: Como funciona:
@@ -103,4 +103,4 @@ npm run start
 </table>
 
 ## :dart: Status do projeto
-* ![](https://us-central1-progress-markdown.cloudfunctions.net/progress/99)
+* ![](https://us-central1-progress-markdown.cloudfunctions.net/progress/100)

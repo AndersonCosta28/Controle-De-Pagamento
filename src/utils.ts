@@ -1,3 +1,5 @@
+import { SwaggerUtil } from "./interface/swagger.interface";
+
 export function QntdDiasNoMes(): number {
     const data = new Date();
     const diasDoMes = new Date(data.getFullYear(), data.getMonth() + 1, 0).getDate();
@@ -38,7 +40,7 @@ export class TemplateSwaggerCrud {
     path() {
         const RotaSemParametro = `/${this.entidade}`;
         const RotaComParametro = `/${this.entidade}/{id}`
-        const JSONParaRotaSemParametro = '{"' + RotaSemParametro.concat(`":{ "post": "", "get": "" }}`)
+        const JSONParaRotaSemParametro = '{"' + RotaSemParametro.concat(`":{  }}`)
         const ObjetoParaRotaSemParametro = JSON.parse(JSONParaRotaSemParametro);
         ObjetoParaRotaSemParametro[RotaSemParametro].post = this.post();
         ObjetoParaRotaSemParametro[RotaSemParametro].get = this.getAll();
@@ -197,5 +199,69 @@ export class TemplateSwaggerCrud {
                 }
             }
         }
+    }
+}
+
+export class TemplateSwaggerUtils {
+
+    constructor(private util: SwaggerUtil) {
+
+    }
+
+    arrayGetId: Array<any>;
+    arrayGetAll: Array<any>;
+    arrayPut: Array<any>;
+    arrayPost: Array<any>;
+    arrayDeletar: Array<any>;
+    //TO-DO
+    // pathSemParametro() {
+    // const RotaSemParametro = `/${this.util.entidade}/${this.util.endpoint}`;
+    // const JSONParaRotaSemParametro = '{"' + RotaSemParametro.concat(`":{ }}`);
+    //     const ObjetoParaRotaSemParametro = JSON.parse(JSONParaRotaSemParametro);
+
+    //     // ObjetoParaRotaSemParametro[RotaSemParametro].post = this.post();
+    //     // ObjetoParaRotaSemParametro[RotaSemParametro].get = this.getAll();
+
+    //     return { ...ObjetoParaRotaSemParametro }
+    // }
+
+    pathComParametroByID(metodo: string) {
+        const RotaComParametro = `/${this.util.entidade}/${this.util.endpoint}/{id}`
+        const JSONParaRotaComParametro = '{"' + RotaComParametro.concat(`":{ }}`);
+        const conteudo = {
+            description: this.util.description,
+            summary: this.util.summary,
+            tags: this.util.tags,
+            parameters: this.util.request.parameters,
+            requestBody:this.util.request.requestBody,
+            responses: {
+                200: {
+                    description: `Um ${this.util.entidade} retornado`,
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "object",
+                                $ref: `#/components/schemas/${this.util.entidade}`
+                            }
+                        }
+                    }
+                },
+                400: {
+                    description: `Erro buscar ${this.util.entidade}, verifique os dados e envie novamente`
+                }
+            }
+        }
+        const ObjetoParaRotaComParametro = JSON.parse(JSONParaRotaComParametro);
+        ObjetoParaRotaComParametro[RotaComParametro][`${metodo}`] = conteudo;
+        return { ...ObjetoParaRotaComParametro}
+
+    }
+    component() {
+        const component_JSON = '{"' + this.util.endpoint.concat(`":{}}`)
+        const component_Objeto = JSON.parse(component_JSON)
+        component_Objeto[this.util.endpoint]['type'] = 'object';
+        component_Objeto[this.util.endpoint].properties = this.util.propriedades;
+        component_Objeto[this.util.endpoint].required = this.util.required;
+        return component_Objeto
     }
 }
